@@ -1,0 +1,59 @@
+\subsection*{Upwind method}
+\label{sec:Q5a}
+
+Using upwind discretization we can solve the 1-d linear advection equation using an equation of the form:
+
+\begin{equation}
+    \frac{a_i^{n+1} - a_i^n}{\Delta t} = -u \frac{a_i^{n} - a_{i-1}^n}{\Delta x}
+\label{eq:upwind}
+\end{equation}
+
+We can rearrange this equation to be in the form:
+
+\begin{equation}
+\begin{split}
+    a_i^{n+1} & = \frac{-u \Delta t}{\Delta x} (a_i^{n} - a_{i-1}^n) + a_i^n \\
+              & = - C (a_i^{n} - a_{i-1}^n) + a_i^n
+\end{split}
+\label{eq:upwind_a}
+\end{equation}
+
+Using this method we produce the figures \ref{fig:upwind_dx005}, \ref{fig:upwind_dx003} and \ref{fig:upwind_dx001}. From the results we can see that the solution is stable for all CFL numbers tested and the systems with higher resolution or lower $\Delta x$ retain the initial top-hat distribution better. The stability can be found through a fourier analysis of equation \ref{eq:upwind_a}. this will be done through a substitution of $a_j^n = A^n e^{ij \theta}$. Due to indexing from above we will replace our time index $i$ with $j$ and instead use $i$ to represent imaginary values.  The stability of the system is shown through:
+
+\begin{equation}
+\begin{split}
+    A^{n+1} e^{ij\theta} &= -C (A^{n}e^{ij\theta} - A^n e^{i(j-1)\theta}) + A^n e^{ij\theta} \\
+    \frac{A^{n+1}}{A^n} &= 1 - C(1 - e^{-i\theta}) \\
+                        &= 1 - C + C(\cos\theta - i\sin\theta) \\
+                        &= 1 - C(1 - \cos\theta) - iC\sin\theta \\
+    \left|\frac{A^{n+1}}{A^n} \right| &= (1 - C(1 - \cos\theta))^2 - (iC\sin\theta)^2 \\
+                        &= 1 - 2C(1-\cos\theta) + C^2(1 + \cos^2\theta - 2\cos\theta) + C^2\sin^2\theta \\
+                        &= 1 - 2C + 2C\cos\theta + 2C^2 - 2C^2\cos^2\theta \\
+                        &= 1 - 2C(1-C)(1-\cos\theta)
+\end{split}
+\end{equation}
+
+Stability requires that $\left|\frac{A^{n+1}}{A^n} \right|^2 < 1$ so the criteria is:
+
+\begin{equation}
+\begin{split}
+    |1 - 2C(1-C)(1-\cos\theta)| &\leq 1 \\
+    -2C (1 - C)(1 - \cos\theta) &\leq 0 \\
+    1 - C \geq 0 \\
+    C \leq 1
+\end{split}
+\end{equation}
+
+Diffusion can be shown by expanding equation \ref{eq:upwind}:
+
+\begin{equation}
+\begin{split}
+     \frac{a_i^{n+1} - a_i^n}{\Delta t} &= -u \frac{a_i^{n} - a_{i-1}^n}{\Delta x} \\
+                                        &= -u \left(\frac{a_{i+1}^n - a_{i-1}^n}{2\Delta x} - \Delta x \frac{(a_{i+1}^n - 2a_i^n + a_{i-1}^n)}{2\Delta x^2} \right) \\
+                                        &= -u \frac{(a_{i+1}^n - a_{i-1}^n)}{2\Delta x} + \frac{u \Delta x}{2} \frac{(a_{i+1}^n - 2a_i^n + a_{i-1}^n)}{\Delta x^2} \\
+                                        &= -u \frac{(a_{i+1}^n - a_{i-1}^n)}{2\Delta x} + D \frac{(a_{i+1}^n - 2a_i^n + a_{i-1}^n)}{\Delta x^2} 
+\end{split}
+\label{eq:upwind_diff}
+\end{equation}
+
+From equation \ref{eq:upwind_diff} we can see that the upwind method can be broken into two portions. The left portion is identical to the FTCS method, while the right portion is a diffusive term that prevents the upwind solution from being unstable. This numerical diffusion is given by $D = \frac{u \Delta x}{2}$. From this we see that with higher $\Delta x$ or lower resolution the diffusion is greater. The diffusion is more apparent when the system has taken more steps. This can be seen when the simulation period $T = 1.0$ as $a$ has decreased in comparison to $T = 0.1$. The initial distribution has diffused outwards more as the system has updated more times. In general it appears that a higher CFL number results in less diffusion. This is due to higher CFL numbers resulting in a larger $\Delta t$ when $u$ and $\Delta x$ are constant. With larger timesteps the system is updated fewer times resulting in less numeric diffusion.

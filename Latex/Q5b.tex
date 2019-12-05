@@ -1,0 +1,33 @@
+\subsection*{FTCS Method}
+\label{sec:Q5b}
+
+Using FTCS discretization we can solve the 1-d linear advection equation using an equation of the form:
+
+\begin{equation}
+    \frac{a_i^{n+1} - a_i^n}{\Delta t} = -u \frac{a_{i+1}^{n} - a_{i-1}^n}{2 \Delta x}
+\label{eq:FTCS}
+\end{equation}
+
+We can rearrange this equation to be in the form:
+
+\begin{equation}
+\begin{split}
+    a_i^{n+1} & = \frac{-u \Delta t}{2 \Delta x} (a_{i+1}^{n} - a_{i-1}^n) + a_i^n \\
+              & = - \frac{C}{2} (a_{i+1}^{n} - a_{i-1}^n) + a_i^n
+\end{split}
+\label{eq:FTCS_a}
+\end{equation}
+
+Using this method we produce the figures \ref{fig:FTCS_dx005}, \ref{fig:FTCS_dx003} and \ref{fig:FTCS_dx001}. As expected using the FTCS method the solution is unstable. This instability can be shown if we take the fourier transform of equation \ref{eq:FTCS_a}. 
+
+\begin{equation}
+\begin{split}
+    A^{n+1}e^{ij\theta} &= - \frac{C}{2} (A^{n}e^{i(j+1)\theta} - A^{n}e^{i(j-1)\theta}) + A^{n}e^{i(j)\theta} \\
+    A^{n+1} &= -\frac{C}{2} A^n(e^{i\theta} - e^{-i\theta}) + A^n \\
+    A^{n+1} &= A^n(1 - iC \sin\theta) \\
+    \left|\frac{A^{n+1}}{A^n}\right|^2 &= 1 + C^2 sin^2\theta
+\end{split}
+\label{eq:FTCS_fourier}
+\end{equation}
+
+We can see from equation \ref{eq:FTCS_fourier} that $\left|\frac{A^n+1}{A^n}\right|^2 > 1$. This means the FTCS is unstable for any CFL number. From equation \ref{eq:FTCS_fourier} we also see that the instability grows with $C$ which explains why larger CFL number peak at larger values. With a larger period these instabilities are more pronounced as the magnitude of the instability is proportional to $C^2$.

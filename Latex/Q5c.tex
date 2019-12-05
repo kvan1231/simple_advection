@@ -1,0 +1,81 @@
+\subsection*{Implicit in Time Method}
+\label{sec:Q5c}
+
+The implicit-in-time discretization is given by the equation:
+
+\begin{equation}
+    \frac{a_i^{n+1}-a_i^n}{\Delta t} = -u\frac{a_i^{n+1}-a_{i-1}^{n+1}}{\Delta x}
+\label{eq:IIT}
+\end{equation}
+
+Which similar to the previous methods can be rearranged:
+
+\begin{equation}
+\begin{split}
+    a_i^{n+1} & = \frac{-u \Delta t}{\Delta x} (a_{i}^{n+1} - a_{i-1}^{n+1}) + a_i^n \\
+              & = - C (a_{i}^{n+1} - a_{i-1}^{n+1}) + a_i^n \\
+    a_i^n &= -C a_{i-1}^{n+1} + (1+C) a_{i}^{n+1}
+\end{split}
+\label{eq:IIT_a}
+\end{equation}
+
+Which when written in matrix form is generally given as:
+
+\begin{equation}
+\begin{pmatrix}
+1+C &     &     &        &        &     & -C  \\
+-C  & 1+C &     &        &        &     &     \\
+    & -C  & 1+C &        &        &     &     \\
+    &     & -C  & 1+C    &        &     &     \\
+    &     &     & \ddots & \ddots &     &     \\
+    &     &     &        & -C     & 1+C &     \\
+    &     &     &        &        & -C  & 1+C \\
+\end{pmatrix}
+\begin{pmatrix}
+u_1^{n+1}     \\
+u_2^{n+1}     \\
+u_3^{n+1}     \\
+u_4^{n+1}     \\
+\vdots        \\
+u_{N-2}^{n+1} \\
+u_{N-1}^{n+1} \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+u_1^{n}     \\
+u_2^{n}     \\
+u_3^{n}     \\
+u_4^{n}     \\
+\vdots      \\
+u_{N-2}^{n} \\
+u_{N-1}^{n} \\
+\end{pmatrix}
+\end{equation}
+
+To solve for $B$ in an equation of the form $AB = X$  we must take the inverse of $A$ and perform $A^{-1}AB = A^{-1}X$ which becomes $B = A^{-1}X$. We can find the inverse of our matrix using the Gauss-Jordan elimination Method. To do this we append an identity matrix to the matrix which we wish to invert. From here we use basic row operations to change our matrix $A$ into row-echelon form. This will also apply the operations to the identity matrix which once our matrix $A$ is in row-echelon form, the right hand matrix will be $A^{-1}$.
+
+\begin{equation*}
+\left(
+\begin{array}{@{}ccccc|ccccc@{}}
+1+C &        &        &     & -C  & 1 &   &        &   &   \\
+-C  & 1+C    &        &     &     &   & 1 &        &   &   \\
+    & \ddots & \ddots &     &     &   &   & \ddots &   &   \\
+    &        & -C     & 1+C &     &   &   &        & 1 &   \\    
+    &        &        & -C  & 1+C &   &   &        &   & 1 \\    
+\end{array}
+\right)
+\end{equation*}
+
+By doing this we can produce figures \ref{fig:IIT_dx005}, \ref{fig:IIT_dx003} and \ref{fig:IIT_dx001}. Similar to the upwind method, the implicit-in-time method produces a stable solution. Again if we perform a similar analysis as with the upwind method we can see that a numeric diffusion term is present. 
+
+\begin{equation}
+\begin{split}
+     \frac{a_i^{n+1} - a_i^n}{\Delta t} &= -u \frac{a_i^{n+1} - a_{i-1}^{n+1}}{\Delta x} \\
+                                        &= -u \left(\frac{a_{i+1}^{n+1} - a_{i-1}^{n+1}}{2\Delta x} - \Delta x \frac{(a_{i+1}^{n+1} - 2a_i^{n+1} + a_{i-1}^{n+1})}{2\Delta x^2} \right) \\
+                                        &= -u \frac{(a_{i+1}^{n+1}- a_{i-1}^{n+1})}{2\Delta x} + \frac{u \Delta x}{2} \frac{(a_{i+1}^{n+1} - 2a_i^{n+1} + a_{i-1}^{n+1})}{\Delta x^2} \\
+                                        &= -u \frac{(a_{i+1}^{n+1} - a_{i-1}^{n+1})}{2\Delta x} + D \frac{(a_{i+1}^{n+1} - 2a_i^{n+1} + a_{i-1}^{n+1})}{\Delta x^2} 
+\end{split}
+\label{eq:IIT_diff}
+\end{equation}
+
+The effect of the resolution is again apparent with lower resolution producing a more diffuse solution with the diffusion term being represented by $D = \frac{u\Delta x}{2}$. The key difference between the implicit-in-time solution and the upwind solution is that the CFL number has a smaller effect in the implicit-in-time method. While changes in the CFL number resulted in significant changes in $a$ for the upwind method, there is a much smaller difference in the implicit-in-time method. Another difference is that the higher CFL number produces smaller $a$ values in the implicit-in-time method instead of larger $a$ values in the upwind method.
